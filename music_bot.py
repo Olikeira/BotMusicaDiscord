@@ -1,6 +1,11 @@
 import discord
 from discord.ext import commands
 import yt_dlp
+import os
+from dotenv import load_dotenv
+
+# --- Carrega as variáveis de ambiente do arquivo .env ---
+load_dotenv()
 
 # --- Configuração Inicial ---
 intents = discord.Intents.default()
@@ -41,7 +46,7 @@ async def entrar(ctx):
 @bot.command(name='sair', help='Faz o bot sair do canal de voz.')
 async def sair(ctx):
     voice_client = ctx.message.guild.voice_client
-    if voice_client.is_connected():
+    if voice_client and voice_client.is_connected(): # Adicionada verificação se voice_client existe
         await voice_client.disconnect()
     else:
         await ctx.send("O bot não está conectado a um canal de voz.")
@@ -64,14 +69,15 @@ async def tocar(ctx, *, url):
         info = ydl.extract_info(url, download=False)
         audio_url = info['url']
 
-    voice_client.tocar(discord.FFmpegPCMAudio(audio_url, **FFMPEG_OPTIONS))
+    # CORREÇÃO AQUI: A função da biblioteca é .play()
+    voice_client.play(discord.FFmpegPCMAudio(audio_url, **FFMPEG_OPTIONS))
     await ctx.send(f'**Tocando agora:** {info["title"]}')
 
 # --- Comando para Pausar a Música ---
 @bot.command(name='pause', help='Pausa a música que está tocando.')
 async def pause(ctx):
     voice_client = ctx.message.guild.voice_client
-    if voice_client.is_playing():
+    if voice_client and voice_client.is_playing():
         voice_client.pause()
     else:
         await ctx.send("Não há música tocando no momento.")
@@ -80,8 +86,9 @@ async def pause(ctx):
 @bot.command(name='continuar', help='Retoma a música pausada.')
 async def continuar(ctx):
     voice_client = ctx.message.guild.voice_client
-    if voice_client.is_paused():
-        voice_client.continuar()
+    if voice_client and voice_client.is_paused():
+        # CORREÇÃO AQUI: A função da biblioteca é .resume()
+        voice_client.resume()
     else:
         await ctx.send("A música não está pausada.")
 
@@ -89,10 +96,10 @@ async def continuar(ctx):
 @bot.command(name='parar', help='Para a música e limpa a fila.')
 async def parar(ctx):
     voice_client = ctx.message.guild.voice_client
-    if voice_client.is_playing():
-        voice_client.parar()
+    if voice_client and voice_client.is_playing():
+        # CORREÇÃO AQUI: A função da biblioteca é .stop()
+        voice_client.stop()
     else:
         await ctx.send("Não há música tocando no momento.")
 
-# --- Rode o Bot ---
-bot.run('token do seu bot')
+bot.run('Token do seu bot')
