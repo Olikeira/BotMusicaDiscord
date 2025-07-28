@@ -87,7 +87,6 @@ async def pause(ctx):
 async def continuar(ctx):
     voice_client = ctx.message.guild.voice_client
     if voice_client and voice_client.is_paused():
-        # CORREÇÃO AQUI: A função da biblioteca é .resume()
         voice_client.resume()
     else:
         await ctx.send("A música não está pausada.")
@@ -97,7 +96,6 @@ async def continuar(ctx):
 async def parar(ctx):
     voice_client = ctx.message.guild.voice_client
     if voice_client and voice_client.is_playing():
-        # CORREÇÃO AQUI: A função da biblioteca é .stop()
         voice_client.stop()
     else:
         await ctx.send("Não há música tocando no momento.")
